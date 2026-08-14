@@ -1,9 +1,10 @@
 # hardware-inventory
 
 A Bash script to generate a **full hardware inventory** of a computer (Linux only).
-Made to run on every PC at home (even from a **live USB**) and save the
-result to a text file, so you can check later without having to boot each
-machine again.
+Made to run on every PC at home (even from a **live USB**). It prints the
+inventory to the console as text, or as **JSON** (pipable to a file) so you
+can collect the result from each machine and check it later without booting
+them again.
 
 ## What information it provides
 
@@ -76,8 +77,6 @@ sudo ./hardware-inventory.sh -j | jq .          # pretty-print with jq
 
 JSON structure:
 
-JSON structure:
-
 ```json
 {
   "tool": "hardware-inventory",
@@ -93,8 +92,8 @@ JSON structure:
     "max_capacity_bytes": 34359738368,
     "slots_count": "2",
     "modules": [
-      { "slot": "DIMM1", "size": "8 GB", "size_bytes": 8589934592, "type": "DDR4", "speed": "2133", "form_factor": "DIMM", "manufacturer": "Micron" },
-      { "slot": "DIMM3", "size": null, "size_bytes": null, "type": null, "speed": null, "form_factor": "DIMM", "manufacturer": null }
+      { "slot": "DIMM1", "size": "8 GB", "size_bytes": 8589934592, "type": "DDR4", "speed": "2133", "form_factor": "SODIMM", "manufacturer": "Micron" },
+      { "slot": "DIMM3", "size": null, "size_bytes": null, "type": null, "speed": null, "form_factor": null, "manufacturer": null }
     ]
   },
   "gpu": [ { "device": "...", "driver": "i915" } ],
@@ -115,6 +114,7 @@ JSON structure:
 > - Empty slots use `null` for the values the computer reports as "no module
 >   installed". Without `sudo`, `machine_id`, `max_capacity`, `slots_count`,
 >   `modules` and `smart` will be `null`/empty.
+> - `smart` is an empty array unless you run with `-s`.
 
 ### Example: inventory a computer from a live USB
 
@@ -143,8 +143,10 @@ DIMM3       EMPTY        -          -        -        -
 
 ## Notes
 
-- The text output file uses the format `name-YYYYMMDD_HHMMSS-hostname.txt`.
-  The JSON is printed to stdout with `-j`; pipe it to a file to save it.
+- The text output goes to the console by default. With `-o <name>` it is also
+  saved to `name-YYYYMMDD_HHMMSS-hostname.txt`.
+- The JSON is printed to stdout with `-j`; pipe it to a file to save it
+  (`./hardware-inventory.sh -j > pc.json`).
 - SMART disk health only runs with `-s` (off by default for speed).
 - Linux only.
 - `lshw`, `dmidecode` and `smartctl` are not available on all systems by
